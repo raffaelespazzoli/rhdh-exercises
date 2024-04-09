@@ -1,0 +1,32 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: app-config-rhdh
+data:
+  app-config-rhdh.yaml: |
+    signInPage: gitlab 
+    app:
+      title: Red Hat Developer Hub
+      baseUrl: https://backstage-developer-hub-rhdh-gitlab.${basedomain}
+    backend:
+      auth:
+        keys:
+          - secret: ${BACKEND_SECRET}
+      baseUrl: https://backstage-developer-hub-rhdh-gitlab.${basedomain}
+      cors:
+        origin: https://backstage-developer-hub-rhdh-gitlab.${basedomain} 
+    auth:
+      environment: development
+      providers:
+        gitlab:
+          development:
+            clientId: ${AUTH_GITLAB_CLIENT_ID}
+            clientSecret: ${AUTH_GITLAB_CLIENT_SECRET} 
+            audience: https://gitlab.${basedomain}    
+    integrations:
+      gitlab:
+        - host: gitlab.${basedomain}
+          token: ${GITLAB_TOKEN}
+          apiBaseUrl: https://gitlab.${basedomain}/api/v4
+          baseUrl: https://gitlab.${basedomain}                                  
+      
