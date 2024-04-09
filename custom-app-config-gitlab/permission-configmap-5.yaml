@@ -4,7 +4,32 @@ metadata:
   name: rbac-policy
 data:
   rbac-policy.csv: |
-    p, role:default/guests, catalog-entity, read, allow
-    p, role:default/guests, catalog.entity.create, create, allow
+    # admin role
+    p, role:default/admins, catalog.location.read, read, allow
+    p, role:default/admins, catalog.location.create, create, allow
+    p, role:default/admins, catalog.location.delete, delete, allow
+    p, role:default/admins, catalog.entity.create, create, allow   
+    p, role:default/admins, catalog.entity.delete, delete, allow 
+    p, role:default/admins, catalog.entity.read, read, allow 
+    p, role:default/admins, catalog.entity.refresh, refresh, allow  
+    p, role:default/admins, catalog-entity, read, update, delete, allow
+    p, role:default/admins, scaffolder.action.execute, use, allow
+    p, role:default/admins, scaffolder.template.parameter.read, read, allow
+    p, role:default/admins, scaffolder.template.step.read, read, allow
+    p, role:default/admins, policy-entity.read, read, allow
+    p, role:default/admins, policy-entity.create, create, allow
+    p, role:default/admins, policy-entity.update, update, allow
+    p, role:default/admins, policy-entity.delete, delete,allow
+    p, role:default/admins, kubernetes.proxy, use, allow
+    
+    g, user:default/1, role:default/admins
 
-    g, user:default/<YOUR_USER>, role:default/guests
+    p, role:default/team-a, catalog-entity, read, allow
+    p, role:default/team-a, catalog.location.read, read, allow
+    p, role:default/team-b, catalog-entity, read, deny
+
+    g, group:default/team-a, role:default/team-a
+    g, group:default/team-b, role:default/team-b
+
+    g, user:default/2, role:default/team-a
+    g, user:default/3, role:default/team-b

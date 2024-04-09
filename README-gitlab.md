@@ -202,6 +202,11 @@ add this to the configmap:
 oc apply -f ./custom-app-config-gitlab/rhdh-app-configmap-4.yaml -n rhdh-gitlab
 ```
 
+ATTENTION: this step is broken due to this [issue](https://issues.redhat.com/browse/RHIDP-1713).
+We will emulate what the processor would have done by uploading the users-groups.yaml to backstage:
+
+![Register an Existing Component!](./media/Register-an-existing-component.png "Register-an-existing-component")
+
 verify that users and teams are discovered
 
 ## enable RBAC
@@ -212,6 +217,9 @@ enable permissions by updating app-config
 permission:
   enabled: true
   rbac:
+    admin:
+      users:
+        - name: user:default/1   
     policies-csv-file: /permissions/rbac-policy.csv
 ```
 

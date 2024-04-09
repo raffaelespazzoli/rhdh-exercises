@@ -33,12 +33,12 @@ create two groups
 
 create two users
 
-- user1
-- user2
+- user1/@abc1cde2
+- user2/@abc1cde2
 
 ensure user1 belongs to team-a and user2 belongs to team-b
 
-create a repo called `sample-app` udner `team-a` add the `catalog-info.yaml` at the root of the repo.
+create a repo called `sample-app` udner `team-a` add the `catalog-info.yaml` and `users-groups.yaml` at the root of the repo.
 
 ## Install rhdh operator
 
