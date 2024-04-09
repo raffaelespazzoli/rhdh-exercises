@@ -1,10 +1,12 @@
 # rhdh-exercises
 
 
-## Start customizing 
+## Mandatory settings 
 
-create mandatory backend secret
-we also add the basedomain to make it dynamic
+When RHDH is installed via the operator there are some mandatory settings that need to be set.
+
+- create mandatory backend secret
+- add the basedomain to enable proper navigation and cors settings
 
 ```sh
 oc apply -f ./custom-app-config-gitlab/rhdh-secrets.yaml -n rhdh-gitlab
@@ -27,6 +29,7 @@ spec:
         - name: rhdh-secrets       
 ```
 
+or run this:
 
 ```sh
 oc apply -f ./custom-app-config-gitlab/rhdh-app-configmap.yaml -n rhdh-gitlab
@@ -45,14 +48,15 @@ create a secret with a app id and secret
 kind: Secret
 apiVersion: v1
 metadata:
-  name: github-secrets
+  name: gitlab-secrets
   namespace: rhdh
 data:
   AUTH_GITLAB_CLIENT_ID: xxx
   AUTH_GITLAB_CLIENT_SECRET: xxx
 type: Opaque
 ```
-modify app config with the new secret
+
+modify app-config with environment variables from the new secret
 
 ```yaml
     app:
@@ -67,7 +71,9 @@ modify app config with the new secret
             clientSecret: ${AUTH_GITLAB_CLIENT_SECRET}
 ```   
 
-notice that we set the signInPage to gitlab, the default is github. To disable guest login set the environment to production.
+Notice that we set the signInPage to gitlab, the default is github. 
+
+To disable guest login set the environment to production.
 
 add the new secret to the backstage manifests
 
@@ -93,7 +99,7 @@ Verify that you can login with gitlab
 
 create new PAT with [these permissions](https://backstage.io/docs/integrations/gitlab/locations)
 
-add the PAT to the previously created github-secrets secret
+add the PAT to the previously created gitlab-secrets secret
 
 ```yaml
 kind: Secret
@@ -109,7 +115,7 @@ GITLAB_TOKEN:
 type: Opaque
 ```
 
-add the following to the appconfig configmap
+add the following to the app-config configmap
 
 ```yaml
 kind: ConfigMap
@@ -168,7 +174,7 @@ catalog:
 oc apply -f ./custom-app-config-gitlab/rhdh-app-configmap-3.yaml -n rhdh-gitlab
 ```
 
-update  the backstage manifest to use the new configmap for plugins
+update the backstage manifest to use the new configmap for plugins
 
 ```yaml
 spec:

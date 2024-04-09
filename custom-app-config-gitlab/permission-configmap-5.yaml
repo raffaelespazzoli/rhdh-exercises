@@ -22,6 +22,7 @@ data:
     p, role:default/admins, policy-entity.delete, delete,allow
     p, role:default/admins, kubernetes.proxy, use, allow
     
+    # unclear if this line should be needed, given that admin is assigned in the app config
     g, user:default/1, role:default/admins
 
     p, role:default/team-a, catalog-entity, read, allow
@@ -31,5 +32,6 @@ data:
     g, group:default/team-a, role:default/team-a
     g, group:default/team-b, role:default/team-b
 
+    # these lines should not be needed
     g, user:default/2, role:default/team-a
     g, user:default/3, role:default/team-b
