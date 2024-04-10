@@ -54,7 +54,7 @@ data:
       enabled: true
       rbac:
         admin:
-          users:
+          superUsers:
             - name: user:default/1      
         policies-csv-file: /opt/app-root/src/rbac-policy.csv                                                            
       

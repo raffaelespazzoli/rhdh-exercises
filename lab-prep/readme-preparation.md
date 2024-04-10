@@ -24,7 +24,7 @@ export basedomain=$(oc get ingresscontroller -n openshift-ingress-operator defau
 envsubst < ./gitlab.yaml | oc apply -f -
 ```
 
-git lab is not accessible with user `root/<password in "gitlab-gitlab-initial-root-password" secret>`
+gitlab is now accessible with user `root/<password in "gitlab-gitlab-initial-root-password" secret>`
 
 create two groups
 
@@ -38,7 +38,7 @@ create two users
 
 ensure user1 belongs to team-a and user2 belongs to team-b
 
-create a repo called `sample-app` udner `team-a` add the `catalog-info.yaml` and `users-groups.yaml` at the root of the repo.
+create a repo called `sample-app` under `team-a` add the `catalog-info.yaml` and `users-groups.yaml` at the root of the repo.
 
 ## Install rhdh operator
 
