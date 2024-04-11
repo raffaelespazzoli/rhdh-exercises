@@ -32,7 +32,9 @@ setup gitlab with some initial configuration
 ./configure-gitlab.sh
 ```
 
+this script will do the following:
 
+```
 create two groups
 
 - team-a
@@ -46,6 +48,7 @@ create two users
 ensure user1 belongs to team-a and user2 belongs to team-b
 
 create a repo called `sample-app` under `team-a` add the `catalog-info.yaml` and `users-groups.yaml` at the root of the repo.
+```
 
 ## Install rhdh operator
 

@@ -26,14 +26,14 @@ fi
 if [ "0" == $(curl --header "PRIVATE-TOKEN: $GITLAB_TOKEN" -s "${GITLAB_URL}/api/v4/groups?search=team-a" | jq length) ]; then
     curl --request POST --header "PRIVATE-TOKEN: $GITLAB_TOKEN" \
     --header "Content-Type: application/json" \
-    --data '{"path": "team-a", "name": "team-a", \"visibility\": \"public\" }' \
+    --data '{"path": "team-a", "name": "team-a", "visibility": "public" }' \
     "${GITLAB_URL}/api/v4/groups" &> /dev/null
 fi
 
 if [ "0" == $(curl --header "PRIVATE-TOKEN: $GITLAB_TOKEN" -s "${GITLAB_URL}/api/v4/groups?search=team-b" | jq length) ]; then
     curl --request POST --header "PRIVATE-TOKEN: $GITLAB_TOKEN" \
     --header "Content-Type: application/json" \
-    --data '{"path": "team-b", "name": "team-b", \"visibility\": \"public\" }' \
+    --data '{"path": "team-b", "name": "team-b", "visibility": "public" }' \
     "${GITLAB_URL}/api/v4/groups" &> /dev/null
 fi
 
@@ -81,4 +81,10 @@ if [ "0" == $(curl --header "PRIVATE-TOKEN: $GITLAB_TOKEN" -s "${GITLAB_URL}/api
         "${GITLAB_URL}/api/v4/projects" &> /dev/null
 fi
 
-#git clone https://gitlab.apps.cluster-87f8q.dynamic.redhatworkshops.io/team-a/sample-app.git /tmp/sample-app
+# add some content to the repo
+git clone ${GITLAB_URL}/team-a/sample-app.git /tmp/sample-app
+cp catalog-info.yaml users-groups.yaml /tmp/sample-app/
+git -C /tmp/sample-app/ add .
+git -C /tmp/sample-app commit -m "initial commit" --author="user1 <user1@redhat.com>"
+echo enter user1/@abc1cde2
+git -C /tmp/sample-app push
