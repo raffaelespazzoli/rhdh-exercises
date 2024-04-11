@@ -26,6 +26,13 @@ envsubst < ./gitlab.yaml | oc apply -f -
 
 gitlab is now accessible with user `root/<password in "gitlab-gitlab-initial-root-password" secret>`
 
+setup gitlab with some initial configuration
+
+```sh
+./configure-gitlab.sh
+```
+
+
 create two groups
 
 - team-a

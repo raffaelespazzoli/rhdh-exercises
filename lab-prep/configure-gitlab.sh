@@ -18,7 +18,7 @@ if [ "401" == $(curl --header "PRIVATE-TOKEN: $GITLAB_TOKEN" -s -I "${GITLAB_URL
     # Create root token
     oc exec -it -n $GITLAB_NAMESPACE -c toolbox $(oc get pods -n $GITLAB_NAMESPACE -l=app=toolbox -o jsonpath='{ .items[0].metadata.name }') -- sh -c "$(cat << EOF
     gitlab-rails runner "User.find_by_username('root').personal_access_tokens.create(scopes: [:api], name: 'Automation token', expires_at: 365.days.from_now, token_digest: Gitlab::CryptoHelper.sha256('${GITLAB_TOKEN}'))"
-    EOF
+EOF
     )"
 fi
 
@@ -26,14 +26,14 @@ fi
 if [ "0" == $(curl --header "PRIVATE-TOKEN: $GITLAB_TOKEN" -s "${GITLAB_URL}/api/v4/groups?search=team-a" | jq length) ]; then
     curl --request POST --header "PRIVATE-TOKEN: $GITLAB_TOKEN" \
     --header "Content-Type: application/json" \
-    --data '{"path": "team-a", "name": "team-a" }' \
+    --data '{"path": "team-a", "name": "team-a", \"visibility\": \"public\" }' \
     "${GITLAB_URL}/api/v4/groups" &> /dev/null
 fi
 
 if [ "0" == $(curl --header "PRIVATE-TOKEN: $GITLAB_TOKEN" -s "${GITLAB_URL}/api/v4/groups?search=team-b" | jq length) ]; then
     curl --request POST --header "PRIVATE-TOKEN: $GITLAB_TOKEN" \
     --header "Content-Type: application/json" \
-    --data '{"path": "team-b", "name": "team-b" }' \
+    --data '{"path": "team-b", "name": "team-b", \"visibility\": \"public\" }' \
     "${GITLAB_URL}/api/v4/groups" &> /dev/null
 fi
 
@@ -77,6 +77,8 @@ fi
 if [ "0" == $(curl --header "PRIVATE-TOKEN: $GITLAB_TOKEN" -s "${GITLAB_URL}/api/v4/projects?search=sample-app" | jq length) ]; then
     curl --request POST --header "PRIVATE-TOKEN: $GITLAB_TOKEN" \
         --header "Content-Type: application/json" \
-        --data "{\"namespace_id\": \"$TEAM_A_ID\", \"name\": \"sample-app\" }" \
+        --data "{\"namespace_id\": \"$TEAM_A_ID\", \"name\": \"sample-app\", \"visibility\": \"public\" }" \
         "${GITLAB_URL}/api/v4/projects" &> /dev/null
 fi
+
+#git clone https://gitlab.apps.cluster-87f8q.dynamic.redhatworkshops.io/team-a/sample-app.git /tmp/sample-app
