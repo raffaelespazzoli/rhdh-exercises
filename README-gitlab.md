@@ -1,12 +1,11 @@
 # rhdh-exercises
 
-
 ## Mandatory settings 
 
-When RHDH is installed via the operator there are some mandatory settings that need to be set.
+When Red Hat Developer Hub is installed via the operator there are some mandatory settings that need to be set.
 
 - create mandatory backend secret
-- add the basedomain to enable proper navigation and cors settings
+- add the `basedomain` to enable proper navigation and cors settings
 
 ```sh
 oc apply -f ./custom-app-config-gitlab/rhdh-secrets.yaml -n rhdh-gitlab
@@ -14,9 +13,7 @@ export basedomain=$(oc get ingresscontroller -n openshift-ingress-operator defau
 oc patch secret rhdh-secrets -n rhdh-gitlab -p '{"data":{"basedomain":"'"${basedomain}"'"}}'
 ```
 
-enable custom app-config
-
-add this configmap and secrets to the rhdh manifest:
+Enable custom and external application configuration adding this `configmap` and `secret` to the rhdh manifest:
 
 ```yaml
 spec:
@@ -38,30 +35,37 @@ oc apply -f ./custom-app-config-gitlab/rhdh-instance.yaml -n rhdh-gitlab
 
 ## Enable gitlab authentication
 
-create a [new application](https://backstage.io/docs/auth/gitlab/provider)
-- the call back uri should look something like: https://backstage-developer-hub-rhdh-gitlab.apps.cluster-b4w6n.dynamic.redhatworkshops.io/api/auth/gitlab/handler/frame
-- set the correct permissions
+Create a [new application](https://backstage.io/docs/auth/gitlab/provider):
 
-create a secret with a app id and secret
+- the call back uri should look something like: `https://backstage-developer-hub-rhdh-gitlab.${OCP_CLUSTER_DOMAIN}/api/auth/gitlab/handler/frame`
+- set the correct permissions: `read_user`, `read_repository`, `write_repository`, `openid`, `profile`, `email`
+
+Create a secret with a app id and secret
 
 ```yaml
 kind: Secret
 apiVersion: v1
 metadata:
   name: gitlab-secrets
-  namespace: rhdh
-data:
-  AUTH_GITLAB_CLIENT_ID: xxx
-  AUTH_GITLAB_CLIENT_SECRET: xxx
+  namespace: rhdh-gitlab
+stringData:
+  AUTH_GITLAB_CLIENT_ID: REPLACE_WITH_YOUR_GITLAB_CLIENT_ID
+  AUTH_GITLAB_CLIENT_SECRET: REPLACE_WITH_YOUR_GITLAB_CLIENT_SECRET
 type: Opaque
 ```
 
-modify app-config with environment variables from the new secret
+You can create the `gitlab-secrets.yaml` inside of `custom-app-config-gitlab` folder an run:
+
+```sh
+oc apply -f ./custom-app-config-gitlab/gitlab-secrets.yaml -n rhdh-gitlab
+```
+
+Modify app-config with environment variables from the new secret:
 
 ```yaml
     app:
       title: Red Hat Developer Hub
-    signInPage: gitlab   
+    signInPage: gitlab
     auth:
       environment: development
       providers:
@@ -69,13 +73,11 @@ modify app-config with environment variables from the new secret
           development:
             clientId: ${AUTH_GITLAB_CLIENT_ID}
             clientSecret: ${AUTH_GITLAB_CLIENT_SECRET}
-```   
+```
 
-Notice that we set the signInPage to gitlab, the default is github. 
+Notice that we set the `signInPage` to gitlab, the default is github.
 
-To disable guest login set the environment to production.
-
-add the new secret to the backstage manifests
+To disable guest login set the environment to production add the new secret to the backstage manifests:
 
 ```yaml
 spec:
@@ -83,39 +85,37 @@ spec:
     ...
     extraEnvs:
       secrets:
-        - name: github-secrets 
+        - name: gitlab-secrets
 ```
 
-or execute
+or execute:
 
 ```sh
 oc apply -f ./custom-app-config-gitlab/rhdh-app-configmap-1.yaml -n rhdh-gitlab
 oc apply -f ./custom-app-config-gitlab/rhdh-instance-1.yaml -n rhdh-gitlab
 ```
 
-Verify that you can login with gitlab 
+Verify that you can login with GitLab.
 
 ## Enable gitlab plugin integration
 
-create new PAT with [these permissions](https://backstage.io/docs/integrations/gitlab/locations)
-
-add the PAT to the previously created gitlab-secrets secret
+Create new PAT with [these permissions](https://backstage.io/docs/integrations/gitlab/locations) and add the
+PAT to the previously created `gitlab-secrets` secret:
 
 ```yaml
 kind: Secret
 apiVersion: v1
 metadata:
-  name: github-secrets
-  namespace: rhdh
-data:
-  AUTH_GITLAB_CLIENT_ID: xxx
-  AUTH_GITLAB_CLIENT_SECRET: xxx
-  GITLAB_TOKEN: xxx
-GITLAB_TOKEN:
+  name: gitlab-secrets
+  namespace: rhdh-gitlab
+stringData:
+  AUTH_GITLAB_CLIENT_ID: REPLACE_WITH_YOUR_GITLAB_CLIENT_ID
+  AUTH_GITLAB_CLIENT_SECRET: REPLACE_WITH_YOUR_GITLAB_CLIENT_SECRET
+  GITLAB_TOKEN: REPLACE_WITH_YOUR_PAT
 type: Opaque
 ```
 
-add the following to the app-config configmap
+Add the following to the app-config configmap:
 
 ```yaml
 kind: ConfigMap
@@ -134,22 +134,21 @@ data:
           baseUrl: https://gitlab.${basedomain}          
 ```      
 
-or execute
+Or execute:
 
 ```sh
 oc apply -f ./custom-app-config-gitlab/rhdh-app-configmap-2.yaml -n rhdh-gitlab
 ```
 
+## Add gitlab autodiscovery
 
-## add gitlab autodiscovery
-
-create a new configmap with the needed dynamic plugin
+Create a new configmap with the needed dynamic plugin
 
 ```sh
 oc apply -f ./custom-app-config-gitlab/dynamic-plugins-3.yaml -n rhdh-gitlab
 ```
 
-add this to the app config configmap:
+Add this to the app config configmap:
 
 ```yaml
 catalog:
@@ -170,28 +169,32 @@ catalog:
           timeout: { minutes: 3 }
 ```
 
+Or execute:
+
 ```sh
 oc apply -f ./custom-app-config-gitlab/rhdh-app-configmap-3.yaml -n rhdh-gitlab
 ```
 
-update the backstage manifest to use the new configmap for plugins
+Update the backstage manifest to use the new configmap for plugins:
 
 ```yaml
 spec:
   application:
   ...
     dynamicPluginsConfigMapName: dynamic-plugins-rhdh
-```    
+```
+
+Or run:
 
 ```sh
 oc apply -f ./custom-app-config-gitlab/rhdh-instance-3.yaml -n rhdh-gitlab
 ```
 
-verify that the `sample-service` component is in the application catalog
+Verify that the `sample-service` component is in the application catalog.
 
-## enable users/teams autodiscovery
+## Enable users/teams autodiscovery
 
-add this to the configmap:
+Add this to the configmap:
 
 ```yaml
   catalog:
@@ -204,20 +207,22 @@ add this to the configmap:
           groupPattern: '[\s\S]*'
 ```
 
+Or run:
+
 ```sh
 oc apply -f ./custom-app-config-gitlab/rhdh-app-configmap-4.yaml -n rhdh-gitlab
 ```
 
-ATTENTION: this step is broken due to this [issue](https://issues.redhat.com/browse/RHIDP-1713).
+**ATTENTION**: This step is broken due to this [issue](https://issues.redhat.com/browse/RHIDP-1713).
 We will emulate what the processor would have done by uploading the users-groups.yaml to backstage:
 
 ![Register an Existing Component!](./media/Register-an-existing-component.png "Register-an-existing-component")
 
 verify that users and teams are discovered
 
-## enable RBAC
+## Enable RBAC
 
-enable permissions by updating app-config
+Enable permissions by updating app-config
 
 ```yaml
 permission:
@@ -229,7 +234,7 @@ permission:
     policies-csv-file: /permissions/rbac-policy.csv
 ```
 
-mount the new file in the backstage manifests
+Mount the new file in the backstage manifests:
 
 ```yaml
     extraFiles:
@@ -239,7 +244,7 @@ mount the new file in the backstage manifests
           key: rbac-policy.csv
 ```
 
-create a new permission file, see permission-configmap-5.yaml
+Create a new permission file, see [`permission-configmap-5.yaml`](./custom-app-config-gitlab/permission-configmap-5.yaml) file.
 
 ```sh
 oc apply -f ./custom-app-config-gitlab/permission-configmap-5.yaml -n rhdh-gitlab
@@ -247,4 +252,4 @@ oc apply -f ./custom-app-config-gitlab/rhdh-app-configmap-5.yaml -n rhdh-gitlab
 oc apply -f ./custom-app-config-gitlab/rhdh-instance-5.yaml -n rhdh-gitlab
 ```
 
-verify that user2 cannot see `sample-service` anymore
+Verify that user2 cannot see `sample-service` anymore.
