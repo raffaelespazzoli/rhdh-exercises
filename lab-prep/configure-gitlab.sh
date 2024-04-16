@@ -44,14 +44,14 @@ TEAM_B_ID=$(curl --header "PRIVATE-TOKEN: $GITLAB_TOKEN" -s "${GITLAB_URL}/api/v
 if [ "0" == $(curl --header "PRIVATE-TOKEN: $GITLAB_TOKEN" -s "${GITLAB_URL}/api/v4/users?search=user1" | jq length) ]; then
     curl --request POST --header "PRIVATE-TOKEN: $GITLAB_TOKEN" \
         --header "Content-Type: application/json" \
-        --data '{"email": "user1@redhat.com", "password": "@abc1cde2","name": "user1","username": "user1" }' \
+        --data '{"email": "user1@redhat.com", "password": "@abc1cde2","name": "user1","username": "user1", "skip_confirmation": true }' \
         "${GITLAB_URL}/api/v4/users" &> /dev/null
 fi
 
 if [ "0" == $(curl --header "PRIVATE-TOKEN: $GITLAB_TOKEN" -s "${GITLAB_URL}/api/v4/users?search=user2" | jq length) ]; then
     curl --request POST --header "PRIVATE-TOKEN: $GITLAB_TOKEN" \
         --header "Content-Type: application/json" \
-        --data '{"email": "user2@redhat.com", "password": "@abc1cde2","name": "user2","username": "user2" }' \
+        --data '{"email": "user2@redhat.com", "password": "@abc1cde2","name": "user2","username": "user2", "skip_confirmation": true }' \
         "${GITLAB_URL}/api/v4/users" &> /dev/null
 fi
 
