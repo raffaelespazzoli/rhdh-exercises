@@ -2,12 +2,12 @@
 
 This exercise is about setting setting up back stage security end to end:
 
-0. basic RHDH
-1. enable gitlab authentication
-2. enable gitlab integrations
-4. enable gitlab catalog autodicsovery
-4. enable gitlab user/group autodiscovery
-5. enable RBAC permissions
+0. Basic RHDH
+1. Enable gitlab authentication
+2. Enable gitlab integrations
+4. Enable gitlab catalog autodiscovery
+4. Enable gitlab user/group autodiscovery
+5. Enable RBAC permissions
 
-run the lab [preparation instructions](./lab-prep/readme-preparation.md) first
-then follow the exercise steps [here](./README-gitlab.md)
+Run the lab [preparation instructions](./lab-prep/readme-preparation.md) first
+then follow the exercise steps [here](./README-gitlab.md).
