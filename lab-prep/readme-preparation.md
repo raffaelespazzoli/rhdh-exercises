@@ -44,7 +44,7 @@ GitLab is now accessible with user `root/<password in "gitlab-gitlab-initial-roo
 value of that password:
 
 ```sh
-oc get secret gitlab-gitlab-initial-root-password -o jsonpath='{.data.password}' | base64 -d
+oc get secret gitlab-gitlab-initial-root-password -o jsonpath='{.data.password}' -n gitlab-system | base64 -d
 ```
 
 Setup GitLab with some initial configuration:
